@@ -21,18 +21,18 @@ jobs:
        $currentPath = (Get-Location).ProviderPath
        unzip $currentPath/AppName.zip -d $(pwd)
    
-          cd "$currentPath/AppName"
+          # cd "$currentPath"
     - name: Publish App
       run: |
             $currentPath = (Get-Location).ProviderPath
-            cd "$currentPath/AppName"
+            cd "$currentPath"
             dotnet publish -f net8.0-windows10.0.19041.0 -c Release -p:RuntimeIdentifierOverride=win10-x64 -p:WindowsPackageType=None -p:WindowsAppSDKSelfContained=true -p:PublishSingleFile=true --self-contained true -p:PublishTrimmed=true -p:TrimMode=partial
 
     - name: Find and Copy EXE
       run: |
          $currentPath = (Get-Location).ProviderPath
-          cd "$currentPath/AppName"
-           $exePath1 = Get-ChildItem -Path $currentPath/AppName/SampleMaui/bin/Release/net8.0-windows10.0.19041.0 -Recurse -File -Filter '*.exe' | Where-Object { $_.Directory.Name -eq "publish" } | Select-Object -ExpandProperty FullName
+          cd "$currentPath"
+           $exePath1 = Get-ChildItem -Path $currentPath/SampleMaui/bin/Release/net8.0-windows10.0.19041.0 -Recurse -File -Filter '*.exe' | Where-Object { $_.Directory.Name -eq "publish" } | Select-Object -ExpandProperty FullName
            echo "exe-path=$exePath1" | Out-File -FilePath $env:GITHUB_ENV 
 
     - name: Upload a Build Artifact
