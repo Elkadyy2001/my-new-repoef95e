@@ -27,19 +27,10 @@ jobs:
             $currentPath = (Get-Location).ProviderPath
             cd "$currentPath"
             dotnet publish -f net8.0-windows10.0.19041.0 -c Release -p:RuntimeIdentifierOverride=win10-x64 -p:WindowsPackageType=None -p:WindowsAppSDKSelfContained=true -p:PublishSingleFile=true --self-contained true -p:PublishTrimmed=true -p:TrimMode=partial
-
-    # - name: Find and Copy EXE
-    #   run: |
-    #      $currentPath = (Get-Location).ProviderPath
-    #       cd "$currentPath"
-    #      $exePath1 = $currentPath\SampleApp\bin\Release\net8.0-windows10.0.19041.0\win10-x64\publish\SampleApp.exe
-    #       echo "exe-path=$exePath1" | Out-File -FilePath $env:GITHUB_ENV 
-
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v3.1.0
       with:
-        path: |
-          ${{"SampleApp/bin/Release/net8.0-windows10.0.19041.0/win10-x64/publish/SampleApp.exe" }}
+        path: SampleApp/bin/Release/net8.0-windows10.0.19041.0/win10-x64/publish/SampleApp.exe
 
           
 
