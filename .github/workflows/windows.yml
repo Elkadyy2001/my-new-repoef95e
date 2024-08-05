@@ -1,0 +1,46 @@
+name: Publish Windows Maui
+
+on:
+   workflow_dispatch: # This triggers the workflow manually
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+ 
+
+    - uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+    - name: Setup Project
+      run: |
+       Invoke-WebRequest -Uri "${{ secrets.PROJECTURL }}" -OutFile "$(Get-Location)/AppName.zip"
+
+       $currentPath = (Get-Location).ProviderPath
+       unzip $currentPath/AppName.zip -d $(pwd)
+   
+          cd "$currentPath/AppName"
+    - name: Publish App
+      run: |
+            $currentPath = (Get-Location).ProviderPath
+            cd "$currentPath/AppName"
+            dotnet publish -f net8.0-windows10.0.19041.0 -c Release -p:RuntimeIdentifierOverride=win10-x64 -p:WindowsPackageType=None -p:WindowsAppSDKSelfContained=true -p:PublishSingleFile=true --self-contained true -p:PublishTrimmed=true -p:TrimMode=partial
+
+    - name: Find and Copy EXE
+      run: |
+         $currentPath = (Get-Location).ProviderPath
+          cd "$currentPath/AppName"
+           $exePath1 = Get-ChildItem -Path $currentPath/AppName/SampleMaui/bin/Release/net8.0-windows10.0.19041.0 -Recurse -File -Filter '*.exe' | Where-Object { $_.Directory.Name -eq "publish" } | Select-Object -ExpandProperty FullName
+           echo "exe-path=$exePath1" | Out-File -FilePath $env:GITHUB_ENV 
+
+    - name: Upload a Build Artifact
+      uses: actions/upload-artifact@v3.1.0
+      with:
+        path: |
+          ${{ env.exe-path }}
+
+          
+
+        
